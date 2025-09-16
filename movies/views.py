@@ -56,3 +56,30 @@ def delete_review(request, id, review_id):
     review = get_object_or_404(Review, id=review_id, user=request.user)
     review.delete()
     return redirect('movies.show', id=id)
+
+@login_required
+def my_requests(request):
+    # Handle new request submission
+    if request.method == "POST":
+        form = MovieRequestForm(request.POST)
+        if form.is_valid():
+            movie_request = form.save(commit=False)
+            movie_request.user = request.user
+            movie_request.save()
+            return redirect('my_requests')
+    else:
+        form = MovieRequestForm()
+
+    # Fetch this user's requests
+    requests_list = MovieRequest.objects.filter(user=request.user).order_by('-created_at')
+
+    return render(request, 'movies/my_requests.html', {
+        'form': form,
+        'requests_list': requests_list
+    })
+
+@login_required
+def delete_request(request, pk):
+    movie_request = get_object_or_404(MovieRequest, pk=pk, user=request.user)
+    movie_request.delete()
+    return redirect('my_requests')
