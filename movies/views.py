@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Movie, Review
 from django.contrib.auth.decorators import login_required
+from .forms import MovieRequestForm
+from .models import MovieRequest
 def index(request):
     search_term = request.GET.get('search')
     if search_term:
